@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TextInput } from 'react-native'
+import { Audio } from 'expo-av'
 
 import { Text, View } from '../components/Themed'
+import { getCoinGeckoEthereumPrice } from '../api/CoinGeckoAPI'
 import {
   getEthermineCurrentStats,
   getEthermineTotalPayout
 } from '../api/EthermineAPI'
-import { getCoinGeckoEthereumPrice } from '../api/CoinGeckoAPI'
 import { parseHashrate } from '../util/util'
 
 export default function TabOneScreen() {
@@ -15,24 +16,19 @@ export default function TabOneScreen() {
   const [totalEthereum, setTotalEthereum] = useState<number>()
   const [currentEthereumPrice, setCurrentEthereumPrice] = useState<number>()
   const [totalUSD, setTotalUSD] = useState<number>()
-
   const [hashrates, setHashrates] = useState<any>({})
+  const [sound, setSound] = useState<Audio.Sound>()
+  const [minActiveWorkers, setMinActiveWorkers] = useState<number>(4)
+  const [minHashrate, setMinHashrate] = useState<number>(120)
+
+  useEffect(() => {
+    getAPIData()
+  }, [])
 
   useEffect(() => {
     //  make api calls every 30 seconds
     const requestInterval = setInterval(() => {
-      console.log('Making API Request')
-      getEthermineCurrentStats().then((data) => {
-        setEthermineCurrentStats(data)
-      })
-
-      getEthermineTotalPayout().then((data) => {
-        setTotalPayout(data)
-      })
-
-      getCoinGeckoEthereumPrice().then((data) => {
-        setCurrentEthereumPrice(data)
-      })
+      getAPIData()
     }, 30000)
 
     return () => clearInterval(requestInterval)
@@ -53,21 +49,67 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (totalEthereum && currentEthereumPrice) {
-      setTotalUSD(parseFloat((currentEthereumPrice * totalEthereum).toFixed(2)))
+      setTotalUSD(
+        parseFloat(
+          (
+            Math.round(currentEthereumPrice * totalEthereum * 100) / 100
+          ).toFixed(2)
+        )
+      )
     }
   }, [totalEthereum, currentEthereumPrice])
 
   useEffect(() => {
-    if (EthermineCurrentStats) {
-      const tempHashrates: any = {}
-      for (const key in EthermineCurrentStats) {
-        if (key.indexOf('Hashrate') >= 0) {
-          tempHashrates[key] = parseHashrate(EthermineCurrentStats[key])
-        }
+    const tempHashrates: any = {}
+    for (const key in EthermineCurrentStats) {
+      if (key.indexOf('Hashrate') >= 0) {
+        tempHashrates[key] = parseHashrate(EthermineCurrentStats[key])
       }
-      setHashrates(tempHashrates)
     }
+    setHashrates(tempHashrates)
   }, [EthermineCurrentStats])
+
+  //  check if activeWorkers or hashrate drop below threshold
+  useEffect(() => {
+    if (Object.keys(EthermineCurrentStats).length > 0) {
+      if (
+        EthermineCurrentStats.activeWorkers < minActiveWorkers ||
+        EthermineCurrentStats.reportedHashrate < minHashrate
+      ) {
+        playAlarm()
+      }
+    }
+
+    return sound
+      ? () => {
+          sound.unloadAsync()
+        }
+      : undefined
+  }, [EthermineCurrentStats])
+
+  const getAPIData = () => {
+    console.log('Making API Request')
+    getEthermineCurrentStats().then((data) => {
+      setEthermineCurrentStats(data)
+    })
+
+    getEthermineTotalPayout().then((data) => {
+      setTotalPayout(data)
+    })
+
+    getCoinGeckoEthereumPrice().then((data) => {
+      setCurrentEthereumPrice(data)
+    })
+  }
+
+  const playAlarm = async () => {
+    console.log('playing alarm')
+    const { sound } = await Audio.Sound.createAsync(
+      require('../../assets/audio/testAlarm.wav')
+    )
+    setSound(sound)
+    await sound.playAsync()
+  }
 
   return (
     <View style={styles.container}>
@@ -75,6 +117,8 @@ export default function TabOneScreen() {
         <Text style={styles.title}>{totalEthereum}</Text>
         <Text style={styles.title}>${totalUSD}</Text>
       </View>
+      <TextInput style={styles.input} value={'PlaceHolder'} />
+
       {Object.keys(EthermineCurrentStats).map((key: string, i: number) => {
         return (
           <Text key={i} style={styles.body}>
@@ -112,5 +156,10 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '80%'
+  },
+  input: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    backgroundColor: '#FFFFFF'
   }
 })
