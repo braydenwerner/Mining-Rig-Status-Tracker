@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, TextInput } from 'react-native'
+import { Notifications } from 'expo'
+import * as Permissions from 'expo-permissions'
 import { Audio } from 'expo-av'
 
 import { Text, View } from '../components/Themed'
@@ -18,15 +20,16 @@ export default function TabOneScreen() {
   const [totalUSD, setTotalUSD] = useState<number>()
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
-  const [minActiveWorkers, setMinActiveWorkers] = useState<number>(4)
+  const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
   const [minHashrate, setMinHashrate] = useState<number>(120)
 
   useEffect(() => {
-    getAPIData()
+    registerForPushNotifications()
   }, [])
 
   useEffect(() => {
     //  make api calls every 30 seconds
+    getAPIData()
     const requestInterval = setInterval(() => {
       getAPIData()
     }, 30000)
@@ -86,6 +89,17 @@ export default function TabOneScreen() {
         }
       : undefined
   }, [EthermineCurrentStats])
+
+  const registerForPushNotifications = async () => {
+    try {
+      const permission = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+      if (!permission.granted) return
+      const token = await Notifications.getExpoPushTokenAsync()
+      console.log(token)
+    } catch (error) {
+      console.log('Error getting a token', error)
+    }
+  }
 
   const getAPIData = () => {
     console.log('Making API Request')
