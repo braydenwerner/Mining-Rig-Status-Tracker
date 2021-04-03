@@ -4,7 +4,8 @@ import {
   TextInput,
   Platform,
   AsyncStorage,
-  Alert
+  Alert,
+  Button
 } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import Constants from 'expo-constants'
@@ -44,9 +45,11 @@ export default function TabOneScreen() {
   const notificationListener = useRef<any>()
   const responseListener = useRef<any>()
 
+  const { manifest } = Constants
+
   const sendPOSTRequest = async (token: any) => {
     console.log('Attempting to send post request')
-    const rawResponse = await fetch('http://10.0.2.2:3000/token', {
+    const rawResponse = await fetch('http://localhost:3000/token', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -70,8 +73,6 @@ export default function TabOneScreen() {
       // } catch (error) {
       //   console.log(error)
       // }
-
-      sendPOSTRequest(token)
     })
 
     // This listener is fired whenever a notification is received while the app is foregrounded
@@ -263,6 +264,10 @@ export default function TabOneScreen() {
           )
         })}
       </View>
+      <Button
+        title="Send POST Request"
+        onPress={() => sendPOSTRequest(expoPushToken)}
+      />
     </View>
   )
 }
