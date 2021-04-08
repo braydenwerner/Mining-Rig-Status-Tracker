@@ -63,10 +63,9 @@ const getEthermineCurrentStats = async (wallet) => {
 }
 
 const saveData = (data) => {
-  let exists = savedData.find((d) => d.token === data.token)
-  console.log('exisits: ', exists)
-  if (!exists) savedData.push(data)
-  else exists = { ...data }
+  let existingIndx = savedData.findIndex((d) => d.token === data.token)
+  if (existingIdx === -1) savedData.push(data)
+  else savedData[existingIndx] = { ...data }
 }
 
 //  send notification every 30 seconds to all users
