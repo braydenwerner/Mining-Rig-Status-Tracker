@@ -4,6 +4,7 @@ const { Expo } = require('expo-server-sdk')
 const app = express()
 const expo = new Expo()
 const cors = require('cors')
+const { json } = require('express')
 
 app.use(cors())
 
@@ -60,7 +61,7 @@ const getEthermineCurrentStats = async (wallet) => {
     const res = await axios.get(
       `https://api.ethermine.org/miner/${wallet}/currentStats`
     )
-    const data = await res.json()
+    const data = await JSON.parse(res)
     return data.data
   } catch (error) {
     console.error(error)
