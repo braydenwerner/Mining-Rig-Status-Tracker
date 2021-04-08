@@ -21,8 +21,6 @@ const sendNotifications = () => {
     //  if hashrate or active workers are below min for this wallet, push to the
     //  appropriate user
     getEthermineCurrentStats(data.wallet).then((res) => {
-      console.log(parseFloat((res.currentHashrate * 0.000001).toFixed(2)))
-      console.log(data.minHashrate)
       const parsedHashrate = parseFloat(
         (res.currentHashrate * 0.000001).toFixed(2)
       )
@@ -30,16 +28,18 @@ const sendNotifications = () => {
         parsedHashrate < data.minHashrate ||
         res.activeWorkers < data.minActiveWorkers
       ) {
+        console.log('pushing to notification array')
         notifications.push({
           to: data.token,
           sound: 'default',
           title: `Your current hashrate is only ${res.currentHashrate}!`,
-          body: `Active Rigs: ${data.activeWorkers}`,
+          body: `Active Rigs: ${res.activeWorkers}`,
           data: {}
         })
       }
     })
 
+    console.log(notifications)
     //  send notifications based on notifications array
     let chunks = expo.chunkPushNotifications(notifications)
     ;(async () => {
