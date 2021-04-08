@@ -190,12 +190,12 @@ export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <View>
+        <Text style={styles.subtitle}>{wallet}</Text>
         <Text style={styles.title}>{totalEthereum}</Text>
         <Text style={styles.title}>${totalUSD}</Text>
       </View>
       <TextInput style={styles.input} value={'PlaceHolder'} />
 
-      <Text style={styles.body}>{wallet}</Text>
       {EthermineCurrentStats !== undefined &&
         Object.keys(EthermineCurrentStats).map((key: string, i: number) => {
           return (
