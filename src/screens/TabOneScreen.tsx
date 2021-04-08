@@ -31,7 +31,6 @@ export default function TabOneScreen() {
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
   const [minHashrate, setMinHashrate] = useState<number>(370)
-  const [expoPushToken, setExpoPushToken] = useState<string>('')
 
   const sendPOSTRequest = async (token: any) => {
     console.log('Attempting to send post request with token ', { token })
@@ -52,8 +51,6 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token: any) => {
-      setExpoPushToken(token)
-
       if (wallet && minHashrate && minActiveWorkers) sendPOSTRequest(token)
     })
   }, [wallet, minHashrate, minActiveWorkers])
