@@ -10,8 +10,6 @@ app.use(cors())
 let savedData = []
 const PORT = process.env.PORT || 3000
 
-setInterval(sendNotifications, 30000)
-
 const sendNotifications = () => {
   let notifications = []
   for (let data of savedData) {
@@ -75,6 +73,9 @@ const saveData = (data) => {
   if (!exists) savedData.push(data)
   else exists = data
 }
+
+//  send notification every 30 seconds to all users
+setInterval(sendNotifications, 30000)
 
 app.use(express.json())
 
