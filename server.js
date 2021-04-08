@@ -37,21 +37,21 @@ const sendNotifications = () => {
           data: {}
         })
       }
-    })
 
-    console.log(notifications)
-    //  send notifications based on notifications array
-    let chunks = expo.chunkPushNotifications(notifications)
-    ;(async () => {
-      for (let chunk of chunks) {
-        try {
-          let receipts = await expo.sendPushNotificationsAsync(chunk)
-          console.log(receipts)
-        } catch (error) {
-          console.error(error)
+      console.log(notifications)
+      //  send notifications based on notifications array
+      let chunks = expo.chunkPushNotifications(notifications)
+      ;(async () => {
+        for (let chunk of chunks) {
+          try {
+            let receipts = await expo.sendPushNotificationsAsync(chunk)
+            console.log(receipts)
+          } catch (error) {
+            console.error(error)
+          }
         }
-      }
-    })()
+      })()
+    })
   }
 }
 
