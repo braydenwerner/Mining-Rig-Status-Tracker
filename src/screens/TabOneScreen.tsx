@@ -227,6 +227,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold'
   },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
   body: {
     fontSize: 12
   },
