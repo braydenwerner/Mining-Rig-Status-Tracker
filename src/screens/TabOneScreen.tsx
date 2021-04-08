@@ -38,7 +38,7 @@ export default function TabOneScreen() {
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
-  const [minHashrate, setMinHashrate] = useState<number>(120)
+  const [minHashrate, setMinHashrate] = useState<number>(270)
 
   const [expoPushToken, setExpoPushToken] = useState<string>('')
   const [notification, setNotification] = useState<boolean>(false)
@@ -66,13 +66,7 @@ export default function TabOneScreen() {
     registerForPushNotificationsAsync().then((token: any) => {
       setExpoPushToken(token)
 
-      //  send the token to the server
-      // try {
-      //   console.log('Attemping to send post request')
-      //   axios.post('localhost:3000/token', { token })
-      // } catch (error) {
-      //   console.log(error)
-      // }
+      //  sendPOSTRequest(token)
     })
 
     // This listener is fired whenever a notification is received while the app is foregrounded
