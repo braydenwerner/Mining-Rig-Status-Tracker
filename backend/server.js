@@ -57,6 +57,7 @@ const sendNotifications = () => {
 }
 
 const getEthermineCurrentStats = async (wallet) => {
+  console.log(`https://api.ethermine.org/miner/${wallet}/currentStats`)
   const res = await axios.get(
     `https://api.ethermine.org/miner/${wallet}/currentStats`
   )

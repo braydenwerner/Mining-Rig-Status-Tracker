@@ -11,7 +11,7 @@ const getEthermineCurrentStats = async (wallet) => {
 console.log(
   getEthermineCurrentStats('0x53ce4ced03649deeb0588ad4b355d985888df95c').then(
     (res) => {
-      console.log(res)
+      console.log(res.currentHashrate)
     }
   )
 )
