@@ -4,7 +4,6 @@ const { Expo } = require('expo-server-sdk')
 const app = express()
 const expo = new Expo()
 const cors = require('cors')
-const { json } = require('express')
 
 app.use(cors())
 
