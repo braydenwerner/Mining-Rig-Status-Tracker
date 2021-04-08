@@ -32,10 +32,9 @@ export default function TabOneScreen() {
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
-  const [minHashrate, setMinHashrate] = useState<number>(170)
+  const [minHashrate, setMinHashrate] = useState<number>(270)
 
   const sendPOSTRequest = async (token: any) => {
-    console.log('Attempting to send post request with token ', { token })
     const res = await fetch(
       'https://mining-rig-app-backend.herokuapp.com/data',
       {
@@ -52,8 +51,10 @@ export default function TabOneScreen() {
   }
 
   useEffect(() => {
+    if (!wallet || !minHashrate || !minActiveWorkers) return
+
     registerForPushNotificationsAsync().then((token: any) => {
-      if (wallet && minHashrate && minActiveWorkers) sendPOSTRequest(token)
+      sendPOSTRequest(token)
     })
   }, [wallet, minHashrate, minActiveWorkers])
 
