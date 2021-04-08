@@ -3,10 +3,9 @@ const { Expo } = require('expo-server-sdk')
 const app = express()
 const expo = new Expo()
 const cors = require('cors')
-
 app.use(cors())
 let savedPushTokens = []
-const PORT_NUMBER = 3000
+const PORT = process.env.PORT || 3000
 
 const handlePushTokens = ({ title, body }) => {
   let notifications = []
@@ -65,6 +64,6 @@ app.post('/message', (req, res) => {
   res.send(`Received message, with title: ${req.body.title}`)
 })
 
-app.listen(PORT_NUMBER, () => {
-  console.log(`Server Online on Port ${PORT_NUMBER}`)
+app.listen(PORT, () => {
+  console.log(`Server Online on Port ${PORT}`)
 })
