@@ -23,16 +23,18 @@ const sendNotifications = () => {
     getEthermineCurrentStats(data.wallet).then((res) => {
       console.log(parseFloat((res.currentHashrate * 0.000001).toFixed(2)))
       console.log(data.minHashrate)
+      const parsedHashrate = parseFloat(
+        (res.currentHashrate * 0.000001).toFixed(2)
+      )
       if (
-        parseFloat((res.currentHashrate * 0.000001).toFixed(2)) <
-          data.minHashrate ||
+        parsedHashrate < data.minHashrate ||
         res.activeWorkers < data.minActiveWorkers
       ) {
         notifications.push({
-          to: data.pushToken,
+          to: data.token,
           sound: 'default',
-          title: title,
-          body: body,
+          title: `Your current hashrate is only ${res.currentHashrate}!`,
+          body: `Active Rigs: ${data.activeWorkers}`,
           data: { body }
         })
       }
