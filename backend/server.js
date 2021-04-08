@@ -28,17 +28,15 @@ const sendNotifications = () => {
         parsedHashrate < data.minHashrate ||
         res.activeWorkers < data.minActiveWorkers
       ) {
-        console.log('pushing to notification array')
         notifications.push({
           to: data.token,
           sound: 'default',
-          title: `Your current hashrate is only ${res.currentHashrate}!`,
+          title: `Hashrate is low!`,
           body: `Active Rigs: ${res.activeWorkers}`,
           data: {}
         })
       }
 
-      console.log(notifications)
       //  send notifications based on notifications array
       let chunks = expo.chunkPushNotifications(notifications)
       ;(async () => {
