@@ -23,7 +23,7 @@ const sendNotifications = () => {
     //  appropriate user
     getEthermineCurrentStats(data.wallet).then((res) => {
       const parsedHashrate = parseFloat(
-        (res.currentHashrate * 0.000001).toFixed(2)
+        (res.reportedHashrate * 0.000001).toFixed(2)
       )
       if (
         parsedHashrate < data.minHashrate ||
