@@ -9,7 +9,9 @@ app.use(cors())
 let savedData = []
 const PORT = process.env.PORT || 3000
 
-const handlePushTokens = ({ title, body }) => {
+setInterval(sendNotifications, 30000)
+
+const sendNotifications = () => {
   let notifications = []
   for (let data of savedData) {
     if (!Expo.isExpoPushToken(data.pushToken)) {
@@ -19,34 +21,47 @@ const handlePushTokens = ({ title, body }) => {
       continue
     }
 
-    notifications.push({
-      to: data.pushToken,
-      sound: 'default',
-      title: title,
-      body: body,
-      data: { body }
-    })
-  }
+    //  if hashrate or active workers are below min for this wallet, push to the
+    //  appropriate user
+    getEthermineCurrentStats(data.wallet).then((res) => {
+      console.log('res.currentHashrate: ', res.currentHashrate)
+      console.log('res.activeWorkers: ', res.activeWorkers)
+      console.log('data.minHashrate: ', data.minHashrate)
+      console.log('data.minActiveWorkers: ', data.minActiveWorkers)
 
-  let chunks = expo.chunkPushNotifications(notifications)
-
-  ;(async () => {
-    for (let chunk of chunks) {
-      try {
-        let receipts = await expo.sendPushNotificationsAsync(chunk)
-        console.log(receipts)
-      } catch (error) {
-        console.error(error)
+      if (
+        res.currentHashrate < data.minHashrate ||
+        res.activeWorkers < data.minActiveWorkers
+      ) {
+        notifications.push({
+          to: data.pushToken,
+          sound: 'default',
+          title: title,
+          body: body,
+          data: { body }
+        })
       }
-    }
-  })()
+    })
+
+    //  send notifications based on notifications array
+    let chunks = expo.chunkPushNotifications(notifications)
+    ;(async () => {
+      for (let chunk of chunks) {
+        try {
+          let receipts = await expo.sendPushNotificationsAsync(chunk)
+          console.log(receipts)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    })()
+  }
 }
 
 const saveData = (data) => {
   const exists = savedData.find((d) => d.token === data.token)
-  if (!exists) {
-    savedData.push(data)
-  }
+  if (!exists) savedData.push(data)
+  else exists = data
 }
 
 app.use(express.json())
