@@ -47,7 +47,6 @@ export default function TabOneScreen() {
       }
     )
     const content = await res.text()
-
     console.log(content)
   }
 
@@ -60,10 +59,10 @@ export default function TabOneScreen() {
   }, [wallet, minHashrate, minActiveWorkers])
 
   useEffect(() => {
-    setWallet('53ce4cED03649deeB0588aD4b355d985888df95')
+    setWallet('0x53ce4ced03649deeb0588ad4b355d985888df95c')
+    getAPIData()
 
     //  make api calls every 30 seconds
-    getAPIData()
     const requestInterval = setInterval(() => {
       getAPIData()
     }, 30000)
@@ -72,7 +71,11 @@ export default function TabOneScreen() {
   }, [])
 
   useEffect(() => {
-    if (Object.keys(EthermineCurrentStats).length > 0 && totalPayout) {
+    if (
+      EthermineCurrentStats !== undefined &&
+      Object.keys(EthermineCurrentStats).length > 0 &&
+      totalPayout
+    ) {
       setTotalEthereum(
         parseFloat(
           (
@@ -108,7 +111,10 @@ export default function TabOneScreen() {
 
   //  check if activeWorkers or hashrate drop below threshold
   useEffect(() => {
-    if (Object.keys(EthermineCurrentStats).length > 0) {
+    if (
+      EthermineCurrentStats !== undefined &&
+      Object.keys(EthermineCurrentStats).length > 0
+    ) {
       if (
         EthermineCurrentStats.activeWorkers < minActiveWorkers ||
         EthermineCurrentStats.reportedHashrate < minHashrate
@@ -142,7 +148,6 @@ export default function TabOneScreen() {
         return
       }
       token = (await Notifications.getExpoPushTokenAsync()).data
-      console.log(token)
     } else {
       alert('Must use physical device for Push Notifications')
     }
@@ -160,18 +165,15 @@ export default function TabOneScreen() {
   }
 
   const getAPIData = () => {
-    console.log('Making API Request')
     if (wallet) {
-      getEthermineCurrentStats(wallet).then((data) => {
-        setEthermineCurrentStats(data)
-      })
-
-      getEthermineTotalPayout(wallet).then((data) => {
-        setTotalPayout(data)
-      })
-
-      getCoinGeckoEthereumPrice().then((data) => {
-        setCurrentEthereumPrice(data)
+      Promise.all([
+        getEthermineCurrentStats(wallet),
+        getEthermineTotalPayout(wallet),
+        getCoinGeckoEthereumPrice()
+      ]).then((results) => {
+        setEthermineCurrentStats(results[0])
+        setTotalPayout(results[1])
+        setCurrentEthereumPrice(results[2])
       })
     }
   }
@@ -193,13 +195,15 @@ export default function TabOneScreen() {
       </View>
       <TextInput style={styles.input} value={'PlaceHolder'} />
 
-      {Object.keys(EthermineCurrentStats).map((key: string, i: number) => {
-        return (
-          <Text key={i} style={styles.body}>
-            {key + ': ' + EthermineCurrentStats[key]}
-          </Text>
-        )
-      })}
+      <Text style={styles.body}>{wallet}</Text>
+      {EthermineCurrentStats !== undefined &&
+        Object.keys(EthermineCurrentStats).map((key: string, i: number) => {
+          return (
+            <Text key={i} style={styles.body}>
+              {key + ': ' + EthermineCurrentStats[key]}
+            </Text>
+          )
+        })}
       <View style={{ marginTop: 50 }}>
         {Object.keys(hashrates).map((key: string, i: number) => {
           return (

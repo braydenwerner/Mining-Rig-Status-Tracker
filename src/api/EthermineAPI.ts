@@ -11,12 +11,16 @@ export const getEthermineCurrentStats = async (wallet: string) => {
 }
 
 export const getEthermineTotalPayout = async (wallet: string) => {
-  const res = await fetch(`https://api.ethermine.org/miner/${wallet}/payouts`)
-  const data = await res.json()
+  try {
+    const res = await fetch(`https://api.ethermine.org/miner/${wallet}/payouts`)
+    const data = await res.json()
 
-  let totalPayout = 0
-  for (const ethObj of data.data) {
-    totalPayout += ethObj.amount
+    let totalPayout = 0
+    for (const ethObj of data.data) {
+      totalPayout += ethObj.amount
+    }
+    return totalPayout
+  } catch (error) {
+    console.error(error)
   }
-  return totalPayout
 }
