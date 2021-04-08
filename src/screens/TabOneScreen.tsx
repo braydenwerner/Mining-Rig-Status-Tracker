@@ -32,7 +32,7 @@ export default function TabOneScreen() {
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
-  const [minHashrate, setMinHashrate] = useState<number>(570)
+  const [minHashrate, setMinHashrate] = useState<number>(275)
 
   const sendPOSTRequest = async (token: any) => {
     const res = await fetch(
