@@ -170,10 +170,10 @@ export default function TabOneScreen() {
         getEthermineCurrentStats(wallet),
         getEthermineTotalPayout(wallet),
         getCoinGeckoEthereumPrice()
-      ]).then((results) => {
-        setEthermineCurrentStats(results[0])
-        setTotalPayout(results[1])
-        setCurrentEthereumPrice(results[2])
+      ]).then((res) => {
+        setEthermineCurrentStats(res[0])
+        setTotalPayout(res[1])
+        setCurrentEthereumPrice(res[2])
       })
     }
   }

@@ -13,10 +13,8 @@ const PORT = process.env.PORT || 3000
 const sendNotifications = () => {
   let notifications = []
   for (let data of savedData) {
-    if (!Expo.isExpoPushToken(data.pushToken)) {
-      console.error(
-        `Push token ${data.pushToken} is not a valid Expo push token`
-      )
+    if (!Expo.isExpoPushToken(data.token)) {
+      console.error(`Push token ${data.token} is not a valid Expo push token`)
       continue
     }
 
