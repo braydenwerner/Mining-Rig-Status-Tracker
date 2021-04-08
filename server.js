@@ -60,14 +60,15 @@ const getEthermineCurrentStats = async (wallet) => {
     const res = await axios.get(
       `https://api.ethermine.org/miner/${wallet}/currentStats`
     )
-    return res
+    const data = await res.json()
+    return data.data
   } catch (error) {
     console.error(error)
   }
 }
 
 const saveData = (data) => {
-  const exists = savedData.find((d) => d.token === data.token)
+  let exists = savedData.find((d) => d.token === data.token)
   if (!exists) savedData.push(data)
   else exists = data
 }
