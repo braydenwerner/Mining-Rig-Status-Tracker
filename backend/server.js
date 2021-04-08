@@ -56,8 +56,9 @@ app.get('/', (req, res) => {
 })
 
 app.post('/data', (req, res) => {
+  console.log('req.body: ', req.body)
   saveData(req.body)
-  res.send(`Received push token with data `, req.body)
+  res.send('Received push token with data on backend')
 })
 
 app.post('/message', (req, res) => {
