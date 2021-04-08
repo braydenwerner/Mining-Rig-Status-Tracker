@@ -21,7 +21,9 @@ Notifications.setNotificationHandler({
 })
 
 export default function TabOneScreen() {
-  const [wallet, setWallet] = useState<string | null>(null)
+  const [wallet, setWallet] = useState<string | null>(
+    '0x53ce4ced03649deeb0588ad4b355d985888df95c'
+  )
   const [EthermineCurrentStats, setEthermineCurrentStats] = useState<any>({})
   const [totalPayout, setTotalPayout] = useState<number>()
   const [totalEthereum, setTotalEthereum] = useState<number>()
@@ -30,7 +32,7 @@ export default function TabOneScreen() {
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
-  const [minHashrate, setMinHashrate] = useState<number>(370)
+  const [minHashrate, setMinHashrate] = useState<number>(170)
 
   const sendPOSTRequest = async (token: any) => {
     console.log('Attempting to send post request with token ', { token })
@@ -116,7 +118,7 @@ export default function TabOneScreen() {
         EthermineCurrentStats.activeWorkers < minActiveWorkers ||
         parseHashrate(EthermineCurrentStats.reportedHashrate) < minHashrate
       ) {
-        //  playAlarm()
+        playAlarm()
       }
     }
 
