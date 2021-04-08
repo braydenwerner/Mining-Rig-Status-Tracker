@@ -1,16 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
-import {
-  StyleSheet,
-  TextInput,
-  Platform,
-  AsyncStorage,
-  Alert,
-  Button
-} from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, TextInput, Platform } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import Constants from 'expo-constants'
 import { Audio } from 'expo-av'
-import axios from 'axios'
 
 import { Text, View } from '../components/Themed'
 import { getCoinGeckoEthereumPrice } from '../api/CoinGeckoAPI'
@@ -19,7 +11,6 @@ import {
   getEthermineTotalPayout
 } from '../api/EthermineAPI'
 import { parseHashrate } from '../util/util'
-// import BackgroundTask from 'react-native-background-task'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -30,6 +21,7 @@ Notifications.setNotificationHandler({
 })
 
 export default function TabOneScreen() {
+  const [wallet, setWallet] = useState<string | null>(null)
   const [EthermineCurrentStats, setEthermineCurrentStats] = useState<any>({})
   const [totalPayout, setTotalPayout] = useState<number>()
   const [totalEthereum, setTotalEthereum] = useState<number>()
@@ -39,25 +31,22 @@ export default function TabOneScreen() {
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
   const [minHashrate, setMinHashrate] = useState<number>(270)
-
   const [expoPushToken, setExpoPushToken] = useState<string>('')
-  const [notification, setNotification] = useState<boolean>(false)
-  const notificationListener = useRef<any>()
-  const responseListener = useRef<any>()
-
-  const { manifest } = Constants
 
   const sendPOSTRequest = async (token: any) => {
-    console.log('Attempting to send post request')
-    const rawResponse = await fetch('http://localhost:3000/token', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ token })
-    })
-    const content = await rawResponse.json()
+    console.log('Attempting to send post request with token ', { token })
+    const res = await fetch(
+      'https://mining-rig-app-backend.herokuapp.com/data',
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token, wallet, minHashrate, minActiveWorkers })
+      }
+    )
+    const content = await res.text()
 
     console.log(content)
   }
@@ -66,31 +55,13 @@ export default function TabOneScreen() {
     registerForPushNotificationsAsync().then((token: any) => {
       setExpoPushToken(token)
 
-      //  sendPOSTRequest(token)
+      if (wallet && minHashrate && minActiveWorkers) sendPOSTRequest(token)
     })
-
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification: any) => {
-        setNotification(notification)
-      }
-    )
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response: any) => {
-        console.log(response)
-        sendPushNotification(expoPushToken)
-      }
-    )
-
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current)
-      Notifications.removeNotificationSubscription(responseListener.current)
-    }
-  }, [])
+  }, [wallet, minHashrate, minActiveWorkers])
 
   useEffect(() => {
+    setWallet('53ce4cED03649deeB0588aD4b355d985888df95')
+
     //  make api calls every 30 seconds
     getAPIData()
     const requestInterval = setInterval(() => {
@@ -153,28 +124,6 @@ export default function TabOneScreen() {
       : undefined
   }, [EthermineCurrentStats])
 
-  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/notifications
-  async function sendPushNotification(expoPushToken: any) {
-    console.log('sending push notification')
-    const message = {
-      to: expoPushToken,
-      sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
-      data: { someData: 'goes here' }
-    }
-
-    await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(message)
-    })
-  }
-
   async function registerForPushNotificationsAsync() {
     let token
     if (Constants.isDevice) {
@@ -212,17 +161,19 @@ export default function TabOneScreen() {
 
   const getAPIData = () => {
     console.log('Making API Request')
-    getEthermineCurrentStats().then((data) => {
-      setEthermineCurrentStats(data)
-    })
+    if (wallet) {
+      getEthermineCurrentStats(wallet).then((data) => {
+        setEthermineCurrentStats(data)
+      })
 
-    getEthermineTotalPayout().then((data) => {
-      setTotalPayout(data)
-    })
+      getEthermineTotalPayout(wallet).then((data) => {
+        setTotalPayout(data)
+      })
 
-    getCoinGeckoEthereumPrice().then((data) => {
-      setCurrentEthereumPrice(data)
-    })
+      getCoinGeckoEthereumPrice().then((data) => {
+        setCurrentEthereumPrice(data)
+      })
+    }
   }
 
   const playAlarm = async () => {
@@ -258,10 +209,6 @@ export default function TabOneScreen() {
           )
         })}
       </View>
-      <Button
-        title="Send POST Request"
-        onPress={() => sendPOSTRequest(expoPushToken)}
-      />
     </View>
   )
 }

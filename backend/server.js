@@ -3,20 +3,24 @@ const { Expo } = require('expo-server-sdk')
 const app = express()
 const expo = new Expo()
 const cors = require('cors')
+
 app.use(cors())
-let savedPushTokens = []
+
+let savedData = []
 const PORT = process.env.PORT || 3000
 
 const handlePushTokens = ({ title, body }) => {
   let notifications = []
-  for (let pushToken of savedPushTokens) {
-    if (!Expo.isExpoPushToken(pushToken)) {
-      console.error(`Push token ${pushToken} is not a valid Expo push token`)
+  for (let data of savedData) {
+    if (!Expo.isExpoPushToken(data.pushToken)) {
+      console.error(
+        `Push token ${data.pushToken} is not a valid Expo push token`
+      )
       continue
     }
 
     notifications.push({
-      to: pushToken,
+      to: data.pushToken,
       sound: 'default',
       title: title,
       body: body,
@@ -38,11 +42,10 @@ const handlePushTokens = ({ title, body }) => {
   })()
 }
 
-const saveToken = (token) => {
-  console.log(token, savedPushTokens)
-  const exists = savedPushTokens.find((t) => t === token)
+const saveData = (data) => {
+  const exists = savedData.find((d) => d.token === data.token)
   if (!exists) {
-    savedPushTokens.push(token)
+    savedData.push(data)
   }
 }
 
@@ -52,10 +55,9 @@ app.get('/', (req, res) => {
   res.send('Push Notification Server Running')
 })
 
-app.post('/token', (req, res) => {
-  saveToken(req.body.token)
-  console.log(`Received push token, ${req.body.token}`)
-  res.send(`Received push token, ${req.body.token}`)
+app.post('/data', (req, res) => {
+  saveData(req.body)
+  res.send(`Received push token with data `, req.body)
 })
 
 app.post('/message', (req, res) => {
