@@ -11,6 +11,7 @@ let savedData = []
 const PORT = process.env.PORT || 3000
 
 const sendNotifications = () => {
+  console.log(savedData)
   let notifications = []
   for (let data of savedData) {
     if (!Expo.isExpoPushToken(data.token)) {
@@ -54,7 +55,6 @@ const sendNotifications = () => {
 }
 
 const getEthermineCurrentStats = async (wallet) => {
-  console.log(`https://api.ethermine.org/miner/${wallet}/currentStats`)
   const res = await axios.get(
     `https://api.ethermine.org/miner/${wallet}/currentStats`
   )
