@@ -1,4 +1,5 @@
 const express = require('express')
+const axios = require('axios')
 const { Expo } = require('expo-server-sdk')
 const app = express()
 const expo = new Expo()
@@ -55,6 +56,17 @@ const sendNotifications = () => {
         }
       }
     })()
+  }
+}
+
+const getEthermineCurrentStats = async (wallet) => {
+  try {
+    const res = await axios.get(
+      `https://api.ethermine.org/miner/${wallet}/currentStats5`
+    )
+    return res
+  } catch (error) {
+    console.error(error)
   }
 }
 
