@@ -117,9 +117,9 @@ export default function TabOneScreen() {
     ) {
       if (
         EthermineCurrentStats.activeWorkers < minActiveWorkers ||
-        EthermineCurrentStats.reportedHashrate < minHashrate
+        parseHashrate(EthermineCurrentStats.reportedHashrate) < minHashrate
       ) {
-        playAlarm()
+        //  playAlarm()
       }
     }
 
@@ -179,7 +179,6 @@ export default function TabOneScreen() {
   }
 
   const playAlarm = async () => {
-    console.log('playing alarm')
     const { sound } = await Audio.Sound.createAsync(
       require('../../assets/audio/testAlarm.wav')
     )
