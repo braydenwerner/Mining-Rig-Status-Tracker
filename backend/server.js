@@ -21,13 +21,9 @@ const sendNotifications = () => {
     //  if hashrate or active workers are below min for this wallet, push to the
     //  appropriate user
     getEthermineCurrentStats(data.wallet).then((res) => {
-      console.log('res.currentHashrate: ', res.currentHashrate)
-      console.log('res.activeWorkers: ', res.activeWorkers)
-      console.log('data.minHashrate: ', data.minHashrate)
-      console.log('data.minActiveWorkers: ', data.minActiveWorkers)
-
       if (
-        res.currentHashrate < data.minHashrate ||
+        parseFloat((res.currentHashrate * 0.000001).toFixed(2)) <
+          data.minHashrate ||
         res.activeWorkers < data.minActiveWorkers
       ) {
         notifications.push({
