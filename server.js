@@ -57,15 +57,11 @@ const sendNotifications = () => {
 }
 
 const getEthermineCurrentStats = async (wallet) => {
-  try {
-    const res = await axios.get(
-      `https://api.ethermine.org/miner/${wallet}/currentStats`
-    )
-    const data = await JSON.parse(res)
-    return data.data
-  } catch (error) {
-    console.error(error)
-  }
+  const res = await axios.get(
+    `https://api.ethermine.org/miner/${wallet}/currentStats`
+  )
+
+  return res.data.data
 }
 
 const saveData = (data) => {
