@@ -35,7 +35,7 @@ const sendNotifications = () => {
           sound: 'default',
           title: `Your current hashrate is only ${res.currentHashrate}!`,
           body: `Active Rigs: ${data.activeWorkers}`,
-          data: { body }
+          data: {}
         })
       }
     })
