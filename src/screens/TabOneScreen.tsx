@@ -56,7 +56,9 @@ export default function TabOneScreen() {
     registerForPushNotificationsAsync().then((token: any) => {
       sendPOSTRequest(token)
     })
-  }, [wallet, minHashrate, minActiveWorkers])
+    //  EthermineCurrentStats dependency to continue sending token to server after app is closed
+    //  also stops heroku from stopping app due to idling
+  }, [wallet, minHashrate, minActiveWorkers, EthermineCurrentStats])
 
   useEffect(() => {
     setWallet('0x53ce4ced03649deeb0588ad4b355d985888df95c')
