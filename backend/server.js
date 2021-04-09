@@ -95,7 +95,7 @@ app.listen(PORT, () => {
 
 //  stop heroku from idling
 //  https://stackoverflow.com/questions/5480337/easy-way-to-prevent-heroku-idling
-var http = require('http') //importing http
+var http = require('http')
 
 function startKeepAlive() {
   setInterval(function () {
