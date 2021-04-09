@@ -100,7 +100,7 @@ var http = require('http')
 function startKeepAlive() {
   setInterval(function () {
     var options = {
-      host: 'https://mining-rig-app-backend.com',
+      host: 'https://mining-rig-app-backend.herokuapp.com',
       port: 80,
       path: '/'
     }
