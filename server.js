@@ -21,19 +21,18 @@ const sendNotifications = () => {
 
     //  if hashrate or active workers are below min for this wallet, push to the
     //  appropriate user
-    getEthermineCurrentStats(data.wallet).then((res) => {
+    getEtheremineWorkers(workerArr).then((res) => {
+      const minerObj = workerArr.find((obj) => obj.worker === 'breadone3070')
+      console.log(minerObj)
       const parsedHashrate = parseFloat(
-        (res.reportedHashrate * 0.000001).toFixed(2)
+        (minerObj.reportedHashrate * 0.000001).toFixed(2)
       )
-      if (
-        parsedHashrate < data.minHashrate ||
-        res.activeWorkers < data.minActiveWorkers
-      ) {
+      if (parsedHashrate < data.minHashrate) {
         notifications.push({
           to: data.token,
           sound: 'default',
           title: `Hashrate is low!`,
-          body: `Active Rigs: ${res.activeWorkers}`,
+          body: `Hashrate: ${minerObj.parsedHashrate}`,
           data: {}
         })
       }
@@ -58,7 +57,13 @@ const getEthermineCurrentStats = async (wallet) => {
   const res = await axios.get(
     `https://api.ethermine.org/miner/${wallet}/currentStats`
   )
+  return res.data.data
+}
 
+const getEtheremineWorkers = async (wallet) => {
+  const res = await axios.get(
+    `https://api.ethermine.org/miner/${wallet}/workers`
+  )
   return res.data.data
 }
 
