@@ -10,6 +10,16 @@ export const getEthermineCurrentStats = async (wallet: string) => {
   }
 }
 
+export const getEtheremineWorkers = async (wallet: string) => {
+  try {
+    const res = await fetch(`https://api.ethermine.org/miner/${wallet}/workers`)
+    const data = await res.json()
+    return data.data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export const getEthermineTotalPayout = async (wallet: string) => {
   try {
     const res = await fetch(`https://api.ethermine.org/miner/${wallet}/payouts`)

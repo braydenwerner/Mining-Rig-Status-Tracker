@@ -8,6 +8,7 @@ import { Text, View } from '../components/Themed'
 import { getCoinGeckoEthereumPrice } from '../api/CoinGeckoAPI'
 import {
   getEthermineCurrentStats,
+  getEtheremineWorkers,
   getEthermineTotalPayout
 } from '../api/EthermineAPI'
 import { parseHashrate } from '../util/util'
@@ -25,6 +26,7 @@ export default function TabOneScreen() {
     '0x53ce4ced03649deeb0588ad4b355d985888df95c'
   )
   const [EthermineCurrentStats, setEthermineCurrentStats] = useState<any>({})
+  const [workerStats, setWorkerStats] = useState<any>({})
   const [totalPayout, setTotalPayout] = useState<number>()
   const [totalEthereum, setTotalEthereum] = useState<number>()
   const [currentEthereumPrice, setCurrentEthereumPrice] = useState<number>()
@@ -171,11 +173,13 @@ export default function TabOneScreen() {
       Promise.all([
         getEthermineCurrentStats(wallet),
         getEthermineTotalPayout(wallet),
+        getEtheremineWorkers(wallet),
         getCoinGeckoEthereumPrice()
       ]).then((res) => {
         setEthermineCurrentStats(res[0])
         setTotalPayout(res[1])
-        setCurrentEthereumPrice(res[2])
+        setWorkerStats(res[2])
+        setCurrentEthereumPrice(res[3])
       })
     }
   }
