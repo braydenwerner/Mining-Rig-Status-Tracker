@@ -31,7 +31,7 @@ const sendNotifications = () => {
           to: data.token,
           sound: 'default',
           title: `Hashrate is low!`,
-          body: `Hashrate: ${minerObj.parsedHashrate}`,
+          body: `Hashrate: ${parsedHashrate}`,
           data: {}
         })
       }
