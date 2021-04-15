@@ -21,9 +21,8 @@ const sendNotifications = () => {
 
     //  if hashrate or active workers are below min for this wallet, push to the
     //  appropriate user
-    getEtheremineWorkers(workerArr).then((res) => {
+    getEtheremineWorkers(data.wallet).then((workerArr) => {
       const minerObj = workerArr.find((obj) => obj.worker === 'breadone3070')
-      console.log(minerObj)
       const parsedHashrate = parseFloat(
         (minerObj.reportedHashrate * 0.000001).toFixed(2)
       )
