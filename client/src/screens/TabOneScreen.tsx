@@ -5,6 +5,7 @@ import Constants from 'expo-constants'
 import { Audio } from 'expo-av'
 
 import { Text, View } from '../components/Themed'
+import { Dashboard } from '../components/exports'
 import { getCoinGeckoEthereumPrice } from '../api/CoinGeckoAPI'
 import {
   getEthermineCurrentStats,
@@ -21,16 +22,16 @@ Notifications.setNotificationHandler({
   })
 })
 
-export default function TabOneScreen() {
+const TabOneScreen: React.FC = () => {
   const [wallet, setWallet] = useState<string | null>(
     '0x53ce4ced03649deeb0588ad4b355d985888df95c'
   )
-  const [EthermineCurrentStats, setEthermineCurrentStats] = useState<any>({})
-  const [workerStats, setWorkerStats] = useState<any>({})
-  const [totalPayout, setTotalPayout] = useState<number>()
-  const [totalEthereum, setTotalEthereum] = useState<number>()
-  const [currentEthereumPrice, setCurrentEthereumPrice] = useState<number>()
-  const [totalUSD, setTotalUSD] = useState<number>()
+  const [ethermineCurrentStats, setEthermineCurrentStats] = useState<any>({})
+  const [ethermineWorkerStats, setEthermineWorkerStats] = useState<any>([])
+  const [ethermineTotalPayout, setEthermineTotalPayout] = useState<any>({})
+  const [currentEthereumPrice, setCurrentEthereumPrice] = useState<number>(0)
+  const [totalEthereum, setTotalEthereum] = useState<number>(0)
+  const [totalUSD, setTotalUSD] = useState<number>(0)
   const [hashrates, setHashrates] = useState<any>({})
   const [sound, setSound] = useState<Audio.Sound>()
   const [minActiveWorkers, setMinActiveWorkers] = useState<number>(3)
@@ -58,9 +59,9 @@ export default function TabOneScreen() {
     registerForPushNotificationsAsync().then((token: any) => {
       sendPOSTRequest(token)
     })
-    //  EthermineCurrentStats dependency to continue sending token to server after app is closed
+    //  ethermineCurrentStats dependency to continue sending token to server after app is closed
     //  also stops heroku from stopping app due to idling
-  }, [wallet, minHashrate, minActiveWorkers, EthermineCurrentStats])
+  }, [wallet, minHashrate, minActiveWorkers, ethermineCurrentStats])
 
   useEffect(() => {
     setWallet('0x53ce4ced03649deeb0588ad4b355d985888df95c')
@@ -76,20 +77,20 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (
-      EthermineCurrentStats !== undefined &&
-      Object.keys(EthermineCurrentStats).length > 0 &&
-      totalPayout
+      ethermineCurrentStats !== undefined &&
+      Object.keys(ethermineCurrentStats).length > 0 &&
+      ethermineTotalPayout
     ) {
       setTotalEthereum(
         parseFloat(
           (
-            EthermineCurrentStats.unpaid * 0.000000000000000001 +
-            totalPayout * 0.000000000000000001
+            ethermineCurrentStats.unpaid * 0.000000000000000001 +
+            ethermineTotalPayout * 0.000000000000000001
           ).toFixed(5)
         )
       )
     }
-  }, [EthermineCurrentStats, totalPayout])
+  }, [ethermineCurrentStats, ethermineTotalPayout])
 
   useEffect(() => {
     if (totalEthereum && currentEthereumPrice) {
@@ -105,23 +106,23 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     const tempHashrates: any = {}
-    for (const key in EthermineCurrentStats) {
+    for (const key in ethermineCurrentStats) {
       if (key.indexOf('Hashrate') >= 0) {
-        tempHashrates[key] = parseHashrate(EthermineCurrentStats[key])
+        tempHashrates[key] = parseHashrate(ethermineCurrentStats[key])
       }
     }
     setHashrates(tempHashrates)
-  }, [EthermineCurrentStats])
+  }, [ethermineCurrentStats])
 
   //  check if activeWorkers or hashrate drop below threshold
   useEffect(() => {
     if (
-      EthermineCurrentStats !== undefined &&
-      Object.keys(EthermineCurrentStats).length > 0
+      ethermineCurrentStats !== undefined &&
+      Object.keys(ethermineCurrentStats).length > 0
     ) {
       if (
-        EthermineCurrentStats.activeWorkers < minActiveWorkers ||
-        parseHashrate(EthermineCurrentStats.reportedHashrate) < minHashrate
+        ethermineCurrentStats.activeWorkers < minActiveWorkers ||
+        parseHashrate(ethermineCurrentStats.reportedHashrate) < minHashrate
       ) {
         playAlarm()
       }
@@ -132,7 +133,7 @@ export default function TabOneScreen() {
           sound.unloadAsync()
         }
       : undefined
-  }, [EthermineCurrentStats])
+  }, [ethermineCurrentStats])
 
   async function registerForPushNotificationsAsync() {
     let token
@@ -177,8 +178,8 @@ export default function TabOneScreen() {
         getCoinGeckoEthereumPrice()
       ]).then((res) => {
         setEthermineCurrentStats(res[0])
-        setTotalPayout(res[1])
-        setWorkerStats(res[2])
+        setEthermineTotalPayout(res[1])
+        setEthermineWorkerStats(res[2])
         setCurrentEthereumPrice(res[3])
       })
     }
@@ -194,59 +195,23 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.subtitle}>{wallet}</Text>
-        <Text style={styles.title}>{totalEthereum}</Text>
-        <Text style={styles.title}>${totalUSD}</Text>
-      </View>
-      <TextInput style={styles.input} value={'PlaceHolder'} />
-
-      {EthermineCurrentStats !== undefined &&
-        Object.keys(EthermineCurrentStats).map((key: string, i: number) => {
-          return (
-            <Text key={i} style={styles.body}>
-              {key + ': ' + EthermineCurrentStats[key]}
-            </Text>
-          )
-        })}
-      <View style={{ marginTop: 50 }}>
-        {Object.keys(hashrates).map((key: string, i: number) => {
-          return (
-            <Text key={i} style={styles.body}>
-              {key + ': ' + hashrates[key] + ' MH/s'}
-            </Text>
-          )
-        })}
-      </View>
+      <Dashboard
+        wallet={wallet}
+        ethermineCurrentStats={ethermineCurrentStats}
+        ethermineWorkerStats={ethermineWorkerStats}
+        hashrates={hashrates}
+        totalEthereum={totalEthereum}
+        totalUSD={totalUSD}
+      />
     </View>
   )
 }
+export default TabOneScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  body: {
-    fontSize: 12
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%'
-  },
-  input: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    backgroundColor: '#FFFFFF'
   }
 })

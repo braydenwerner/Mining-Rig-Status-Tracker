@@ -1,0 +1,10 @@
+{
+  "devToolsPort": 19002,
+  "expoServerPort": 19000,
+  "packagerPort": 19000,
+  "expoServerNgrokUrl": "https://pm-b9h.braydenwerner.client.exp.direct",
+  "packagerNgrokUrl": "https://packager.pm-b9h.braydenwerner.client.exp.direct",
+  "ngrokPid": 27358,
+  "packagerPid": null,
+  "webpackServerPort": null
+}
