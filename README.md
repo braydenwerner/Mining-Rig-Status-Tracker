@@ -6,7 +6,7 @@
 
 <div align="center">
 <a href="">
-    <img height="500" src="client/assets/images/miningRig.jpg" />
+    <img height="700" src="client/assets/images/miningRig.jpg" />
 </div>
 </a>
 <br /> <br />
